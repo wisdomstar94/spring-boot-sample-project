@@ -12,6 +12,9 @@ import com.querydsl.core.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,16 +32,24 @@ public class UserController {
 
     @GetMapping("")
     public @ResponseBody ListResponseInfo<UserDTO> list(
-        @RequestParam(value = "seq", defaultValue = "0") Integer seq
+        @RequestParam(value = "seq", defaultValue = "0") Integer seq,
+        @RequestParam(value = "createStartAt", defaultValue = "0") Long createAtStart,
+        @RequestParam(value = "userName", defaultValue = "") String userName,
+        @PageableDefault(page = 1, size = 10) Pageable pageable
+//        @RequestParam(value = "page", defaultValue = "") Integer page,
+//        @RequestParam(value = "size", defaultValue = "") Integer size,
+//        @RequestParam(value = "sort", defaultValue = "") List<String> sort
     ) {
+//        Pageable pageable = PageRequest.of(page, size, );
+
         UserSearchCondition condition = new UserSearchCondition();
         condition.setSeq(seq);
 //        condition.setUserKey(req.getUserKey());
-//        condition.setUserName(req.getUserName());
-//        condition.setCreateStartAt(req.getCreateStartAt());
+        condition.setUserName(userName);
+        condition.setCreateStartAt(createAtStart);
 //        condition.setCreateEndAt(req.getCreateEndAt());
 
-        List<UserDTO> list = this.userService.getAllListUsingQuerydsl(condition);
+        List<UserDTO> list = this.userService.getAllListUsingQuerydsl(condition, pageable);
 
         ListResponseInfo<UserDTO> responseInfo = new ListResponseInfo();
         responseInfo.setCode(10001000);

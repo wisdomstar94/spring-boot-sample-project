@@ -1,7 +1,19 @@
 package com.example.springbootsampleproject.libraries;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.Expressions;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 public class CommonLibrary {
     public static String getMakeToken(Integer length) {
@@ -25,5 +37,11 @@ public class CommonLibrary {
         Random random = new Random();
         Integer value = random.nextInt(max + min) + min;
         return value;
+    }
+
+    public static Timestamp getTimestamp(Long time) {
+        Date date = new Date(time);
+        Timestamp timestamp = new Timestamp(date.getTime());
+        return timestamp;
     }
 }

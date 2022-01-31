@@ -11,6 +11,6 @@ public class UserSearchCondition {
     private Integer seq;
     private String userKey;
     private String userName;
-    private Timestamp createStartAt;
-    private Timestamp createEndAt;
+    private Long createStartAt;
+    private Long createEndAt;
 }

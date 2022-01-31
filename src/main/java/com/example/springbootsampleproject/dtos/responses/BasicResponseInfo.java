@@ -21,7 +21,7 @@ public class BasicResponseInfo {
     private LocalDateTime timestampKST;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    private Timestamp timestamp;
 
     public BasicResponseInfo() {
         this.timestampKST = LocalDateTime.now();

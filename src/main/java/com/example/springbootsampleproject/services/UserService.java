@@ -5,6 +5,7 @@ import com.example.springbootsampleproject.entities.UserDTO;
 import com.example.springbootsampleproject.entities.UserSearchCondition;
 import com.example.springbootsampleproject.repositories.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +25,8 @@ public class UserService {
 //        return list;
 //    }
 
-    public List<UserDTO> getAllListUsingQuerydsl(UserSearchCondition condition) {
-        List<UserDTO> list = this.userRepository.findAllUsingQuerydsl(condition);
+    public List<UserDTO> getAllListUsingQuerydsl(UserSearchCondition condition, Pageable pageable) {
+        List<UserDTO> list = this.userRepository.findAllUsingQuerydsl(condition, pageable);
         return list;
     }
 

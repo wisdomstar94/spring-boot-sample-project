@@ -3,22 +3,35 @@ package com.example.springbootsampleproject.repositories.user;
 import com.example.springbootsampleproject.entities.QUser;
 import com.example.springbootsampleproject.entities.UserDTO;
 import com.example.springbootsampleproject.entities.UserSearchCondition;
+import com.example.springbootsampleproject.libraries.CommonLibrary;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
-    public List<UserDTO> findAllUsingQuerydsl(UserSearchCondition condition) {
+    public List<UserDTO> findAllUsingQuerydsl(UserSearchCondition condition, Pageable pageable) {
         // Q클래스를 이용한다.
         QUser user = QUser.user;
+
+        List<OrderSpecifier> ORDERS = getAllOrderSpecifiers(pageable, user);
 
         // 다음과 같이 실제 테이블의 칼럼명이 아닌 다른 칼럼명으로 반환되게 설정해줄 수 있음
         return queryFactory.select(Projections.bean(
@@ -28,12 +41,56 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 )
                 .from(user)
                 .where(
-                    this.eqSeq(condition.getSeq(), user)
+                    this.eqSeq(condition.getSeq(), user),
+                    this.goeCreateStartAt(condition.getCreateStartAt(), user),
+                    this.containsUserName(condition.getUserName(), user)
                 )
+//                .orderBy(user.seq.desc())
+                .orderBy(ORDERS.stream().toArray(OrderSpecifier[]::new))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
     }
 
     private BooleanExpression eqSeq(Integer seq, QUser user) {
         return seq == null || seq == 0 ? null : user.seq.eq(seq);
+    }
+
+    private BooleanExpression goeCreateStartAt(Long createStartAt, QUser user) {
+        return createStartAt == null || createStartAt == 0 ? null : user.createdAt.goe(CommonLibrary.getTimestamp(createStartAt));
+    }
+
+    private BooleanExpression containsUserName(String userName, QUser user) {
+        return userName == null || userName == "" ? null : user.userName.contains(userName);
+    }
+
+    public OrderSpecifier<?> getSortedColumn(Order order, Path<?> parent, String fieldName) {
+        Path<Object> fieldPath = Expressions.path(Object.class, parent, fieldName);
+        return new OrderSpecifier(order, fieldPath);
+    }
+
+    private List<OrderSpecifier> getAllOrderSpecifiers(Pageable pageable, QUser user) {
+
+        List<OrderSpecifier> ORDERS = new ArrayList<>();
+
+        if (!isEmpty(pageable.getSort())) {
+            for (Sort.Order order : pageable.getSort()) {
+                Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
+                switch (order.getProperty()) {
+                    case "seq":
+                        OrderSpecifier<?> orderId = getSortedColumn(direction, user.seq, "seq");
+                        ORDERS.add(orderId);
+                        break;
+                    case "userName":
+                        OrderSpecifier<?> orderUser = getSortedColumn(direction, user.userName, "userName");
+                        ORDERS.add(orderUser);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return ORDERS;
     }
 }

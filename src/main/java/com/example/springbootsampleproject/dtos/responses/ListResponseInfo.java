@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -23,7 +24,7 @@ public class ListResponseInfo<T> {
     private LocalDateTime timestampKST;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    private Timestamp timestamp;
 
     public ListResponseInfo() {
         this.timestampKST = LocalDateTime.now();
