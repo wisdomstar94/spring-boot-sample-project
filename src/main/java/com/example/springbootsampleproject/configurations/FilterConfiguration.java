@@ -28,6 +28,16 @@ public class FilterConfiguration {
     }
 
     @Bean
+    public FilterRegistrationBean<JwtCheckFilter> jwtCheckFilter() {
+        FilterRegistrationBean<JwtCheckFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new JwtCheckFilter());
+        // registrationBean.addUrlPatterns("/user/*"); // 특정 URL 에 맵핑되는 경우에만 필터가 적용되게 할수도 있음
+        registrationBean.setOrder(3); // 필터의 순서를 지정
+        // registrationBean.setName("TestFilter3"); // 필터의 이름을 지정
+        return registrationBean;
+    }
+
+    @Bean
     public FilterRegistrationBean<TestFilter1> testFilter1() {
         FilterRegistrationBean<TestFilter1> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new TestFilter1());
