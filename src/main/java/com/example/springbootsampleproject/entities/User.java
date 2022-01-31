@@ -8,7 +8,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity(name="User")
@@ -26,7 +29,7 @@ public class User {
     private String userName; // 회원 이름
 
     @CreationTimestamp
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "UTC")
     @Column(columnDefinition="TIMESTAMP")
-    private LocalDateTime createdAt; // 생성일
+    private Timestamp createdAt; // 생성일
+
 }

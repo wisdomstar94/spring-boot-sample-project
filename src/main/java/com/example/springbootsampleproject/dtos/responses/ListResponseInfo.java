@@ -4,7 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Setter
@@ -14,10 +19,14 @@ public class ListResponseInfo<T> {
     private Integer code;
     private String msg;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "UTC")
-    private LocalDateTime timestamp;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime timestampKST;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timestamp;
 
     public ListResponseInfo() {
-        this.timestamp = LocalDateTime.now();
+        this.timestampKST = LocalDateTime.now();
+        this.timestamp = Timestamp.valueOf(LocalDateTime.now());
     }
 }
