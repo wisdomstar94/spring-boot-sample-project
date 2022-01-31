@@ -10,10 +10,14 @@ import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
@@ -27,29 +31,39 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class UserRepositoryImpl implements UserRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
-    public List<UserDTO> findAllUsingQuerydsl(UserSearchCondition condition, Pageable pageable) {
+    public Page<UserDTO> findAllUsingQuerydsl(UserSearchCondition condition, Pageable pageable) {
         // Q클래스를 이용한다.
         QUser user = QUser.user;
 
         List<OrderSpecifier> ORDERS = getAllOrderSpecifiers(pageable, user);
 
         // 다음과 같이 실제 테이블의 칼럼명이 아닌 다른 칼럼명으로 반환되게 설정해줄 수 있음
-        return queryFactory.select(Projections.bean(
+        JPAQuery<UserDTO> query = queryFactory.select(Projections.bean(
                     UserDTO.class,
-                    user.userName.as("outerUserName"), // User 테이블의 userName 칼럼을 UserDTO 클래스의 outerUserName 에 맵핑되게 한다는 뜻
-                    user.createdAt.as("outerCreatedAt")) // User 테이블의 createdAt 칼럼을 UserDTO 클래스의 outerCreatedAt 에 맵핑되게 한다는 뜻
-                )
+                    user.seq.as("outerSeq") // User 테이블의 seq 칼럼을 UserDTO 클래스의 outerSeq 에 맵핑되게 한다는 뜻
+                ))
                 .from(user)
                 .where(
                     this.eqSeq(condition.getSeq(), user),
                     this.goeCreateStartAt(condition.getCreateStartAt(), user),
                     this.containsUserName(condition.getUserName(), user)
                 )
-//                .orderBy(user.seq.desc())
-                .orderBy(ORDERS.stream().toArray(OrderSpecifier[]::new))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .orderBy(ORDERS.stream().toArray(OrderSpecifier[]::new));
+        Integer totalCount = query.fetch().size();
+
+        query.select(Projections.bean(
+            UserDTO.class,
+            user.seq.as("outerSeq"), // User 테이블의 seq 칼럼을 UserDTO 클래스의 outerSeq 에 맵핑되게 한다는 뜻
+            user.userName.as("outerUserName"), // User 테이블의 userName 칼럼을 UserDTO 클래스의 outerUserName 에 맵핑되게 한다는 뜻
+            user.createdAt.as("outerCreatedAt")) // User 테이블의 createdAt 칼럼을 UserDTO 클래스의 outerCreatedAt 에 맵핑되게 한다는 뜻
+        );
+        query.offset(pageable.getOffset());
+        query.limit(pageable.getPageSize());
+
+        List<UserDTO> list = query.fetch();
+
+//        return query.fetch();
+        return new PageImpl<UserDTO>(list, pageable, totalCount);
     }
 
     private BooleanExpression eqSeq(Integer seq, QUser user) {
@@ -61,7 +75,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     private BooleanExpression containsUserName(String userName, QUser user) {
-        return userName == null || userName == "" ? null : user.userName.contains(userName);
+        return userName == null || userName.equals("") ? null : user.userName.contains(userName);
     }
 
     public OrderSpecifier<?> getSortedColumn(Order order, Path<?> parent, String fieldName) {

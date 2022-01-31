@@ -12,6 +12,7 @@ import com.querydsl.core.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -49,12 +50,20 @@ public class UserController {
         condition.setCreateStartAt(createAtStart);
 //        condition.setCreateEndAt(req.getCreateEndAt());
 
-        List<UserDTO> list = this.userService.getAllListUsingQuerydsl(condition, pageable);
+        Page<UserDTO> pageInfo = this.userService.getAllListUsingQuerydsl(condition, pageable);
+
+        Integer totalPages = pageInfo.getTotalPages();
+        Long totalElementCount = pageInfo.getTotalElements();
+        List<UserDTO> list = pageInfo.getContent();
+        Integer currentElementCount = list.size();
 
         ListResponseInfo<UserDTO> responseInfo = new ListResponseInfo();
         responseInfo.setCode(10001000);
         responseInfo.setMsg("success");
         responseInfo.setData(list);
+        responseInfo.setTotalPages(totalPages);
+        responseInfo.setCurrentElementCount(currentElementCount);
+        responseInfo.setTotalElementCount(totalElementCount);
         return responseInfo;
     }
 

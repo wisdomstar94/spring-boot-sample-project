@@ -19,6 +19,9 @@ public class ListResponseInfo<T> {
     private List<T> data;
     private Integer code;
     private String msg;
+    private Integer totalPages;
+    private Integer currentElementCount;
+    private Long totalElementCount;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime timestampKST;
