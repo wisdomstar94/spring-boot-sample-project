@@ -1,10 +1,12 @@
 package com.example.springbootsampleproject.contollers;
 
 import com.example.springbootsampleproject.dtos.requests.AddUserRequestInfo;
+import com.example.springbootsampleproject.dtos.requests.FindAllUserRequestInfo;
 import com.example.springbootsampleproject.dtos.responses.BasicResponseInfo;
 import com.example.springbootsampleproject.dtos.responses.ListResponseInfo;
 import com.example.springbootsampleproject.entities.User;
 import com.example.springbootsampleproject.entities.UserDTO;
+import com.example.springbootsampleproject.entities.UserSearchCondition;
 import com.example.springbootsampleproject.services.UserService;
 import com.querydsl.core.Tuple;
 import org.slf4j.Logger;
@@ -26,8 +28,17 @@ public class UserController {
     }
 
     @GetMapping("")
-    public @ResponseBody ListResponseInfo<UserDTO> list() {
-        List<UserDTO> list = this.userService.getAllListUsingQuerydsl();
+    public @ResponseBody ListResponseInfo<UserDTO> list(
+        @RequestParam(value = "seq", defaultValue = "0") Integer seq
+    ) {
+        UserSearchCondition condition = new UserSearchCondition();
+        condition.setSeq(seq);
+//        condition.setUserKey(req.getUserKey());
+//        condition.setUserName(req.getUserName());
+//        condition.setCreateStartAt(req.getCreateStartAt());
+//        condition.setCreateEndAt(req.getCreateEndAt());
+
+        List<UserDTO> list = this.userService.getAllListUsingQuerydsl(condition);
 
         ListResponseInfo<UserDTO> responseInfo = new ListResponseInfo();
         responseInfo.setCode(10001000);

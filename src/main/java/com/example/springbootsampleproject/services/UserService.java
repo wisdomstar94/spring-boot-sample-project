@@ -2,8 +2,8 @@ package com.example.springbootsampleproject.services;
 
 import com.example.springbootsampleproject.entities.User;
 import com.example.springbootsampleproject.entities.UserDTO;
-import com.example.springbootsampleproject.repositories.UserRepository;
-import com.querydsl.core.Tuple;
+import com.example.springbootsampleproject.entities.UserSearchCondition;
+import com.example.springbootsampleproject.repositories.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +24,8 @@ public class UserService {
 //        return list;
 //    }
 
-    public List<UserDTO> getAllListUsingQuerydsl() {
-        List<UserDTO> list = this.userRepository.findAllUsingQuerydsl();
+    public List<UserDTO> getAllListUsingQuerydsl(UserSearchCondition condition) {
+        List<UserDTO> list = this.userRepository.findAllUsingQuerydsl(condition);
         return list;
     }
 
