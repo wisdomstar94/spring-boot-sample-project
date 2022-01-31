@@ -4,7 +4,9 @@ import com.example.springbootsampleproject.dtos.requests.AddUserRequestInfo;
 import com.example.springbootsampleproject.dtos.responses.BasicResponseInfo;
 import com.example.springbootsampleproject.dtos.responses.ListResponseInfo;
 import com.example.springbootsampleproject.entities.User;
+import com.example.springbootsampleproject.entities.UserDTO;
 import com.example.springbootsampleproject.services.UserService;
+import com.querydsl.core.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,10 @@ public class UserController {
     }
 
     @GetMapping("")
-    public @ResponseBody ListResponseInfo<User> list() {
-        List<User> list = this.userService.getAllList();
+    public @ResponseBody ListResponseInfo<UserDTO> list() {
+        List<UserDTO> list = this.userService.getAllListUsingQuerydsl();
 
-        ListResponseInfo responseInfo = new ListResponseInfo();
+        ListResponseInfo<UserDTO> responseInfo = new ListResponseInfo();
         responseInfo.setCode(10001000);
         responseInfo.setMsg("success");
         responseInfo.setData(list);
