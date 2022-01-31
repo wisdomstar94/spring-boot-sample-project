@@ -23,7 +23,7 @@ public class CopyBodyFilter implements Filter {
 //        this.logger.info("AccessUniqueKeyFilter 진입!");
         ReadableRequestBodyWrapper wrapper = new ReadableRequestBodyWrapper((HttpServletRequest) request);
         wrapper.setAttribute("requestBody", wrapper.getRequestBody());
-        chain.doFilter(request, response);
+        chain.doFilter(wrapper, response); // ServletRequest 를 HttpServletRequestWrapper 으로 wrapping 한 객체를 넘겨야 함
     }
 
     @Override
