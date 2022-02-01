@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -21,11 +22,17 @@ public class QUser extends EntityPathBase<User> {
 
     public final DateTimePath<java.sql.Timestamp> createdAt = createDateTime("createdAt", java.sql.Timestamp.class);
 
+    public final ListPath<String, StringPath> roles = this.<String, StringPath>createList("roles", String.class, StringPath.class, PathInits.DIRECT2);
+
     public final NumberPath<Integer> seq = createNumber("seq", Integer.class);
+
+    public final StringPath userId = createString("userId");
 
     public final StringPath userKey = createString("userKey");
 
     public final StringPath userName = createString("userName");
+
+    public final StringPath userPassword = createString("userPassword");
 
     public QUser(String variable) {
         super(User.class, forVariable(variable));

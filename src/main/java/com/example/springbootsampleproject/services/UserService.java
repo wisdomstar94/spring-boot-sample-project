@@ -35,4 +35,7 @@ public class UserService {
         this.userRepository.saveAll(users);
     }
 
+    public User getUserInfo(String userKey) {
+        return this.userRepository.getUserInfo(userKey);
+    }
 }

@@ -2,7 +2,10 @@ package com.example.springbootsampleproject.contollers;
 
 import com.example.springbootsampleproject.dtos.responses.LoginResponseInfo;
 import com.example.springbootsampleproject.dtos.responses.RefreshResponseInfo;
+import com.example.springbootsampleproject.entities.User;
+import com.example.springbootsampleproject.securities.JwtTokenProvider;
 import com.example.springbootsampleproject.services.JwtService;
+import com.example.springbootsampleproject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,14 +17,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/login")
 public class LoginController {
     private JwtService jwtService;
+    private JwtTokenProvider jwtTokenProvider;
+    private UserService userService;
 
-    public LoginController(@Autowired JwtService jwtService) {
+    public LoginController(
+        @Autowired JwtService jwtService,
+        @Autowired JwtTokenProvider jwtTokenProvider,
+        @Autowired UserService userService
+    ) {
         this.jwtService = jwtService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
     }
 
     @PostMapping("")
     public @ResponseBody LoginResponseInfo index() {
-        String accessToken = this.jwtService.createToken("user", "1", 24);
+        String userKey = "2";
+        User userInfo = userService.getUserInfo(userKey);
+//        String accessToken = this.jwtService.createToken("user", "1", 24);
+        String accessToken = jwtTokenProvider.createToken(userInfo.getUserKey(), userInfo.getRoles());
 
         LoginResponseInfo responseInfo = new LoginResponseInfo();
 

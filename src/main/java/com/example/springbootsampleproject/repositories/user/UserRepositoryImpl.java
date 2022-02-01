@@ -1,6 +1,7 @@
 package com.example.springbootsampleproject.repositories.user;
 
 import com.example.springbootsampleproject.entities.QUser;
+import com.example.springbootsampleproject.entities.User;
 import com.example.springbootsampleproject.entities.UserDTO;
 import com.example.springbootsampleproject.entities.UserSearchCondition;
 import com.example.springbootsampleproject.libraries.CommonLibrary;
@@ -13,14 +14,9 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,5 +102,15 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         }
 
         return ORDERS;
+    }
+
+    public User getUserInfo(String userKey) {
+        QUser user = QUser.user;
+        JPAQuery<User> query = queryFactory.selectFrom(user)
+            .where(
+                user.userKey.eq(userKey)
+            );
+        List<User> list = query.fetch();
+        return list.get(0);
     }
 }
