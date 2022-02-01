@@ -1,10 +1,12 @@
 package com.example.springbootsampleproject.contollers;
 
 import com.example.springbootsampleproject.dtos.responses.LoginResponseInfo;
+import com.example.springbootsampleproject.dtos.responses.RefreshResponseInfo;
 import com.example.springbootsampleproject.services.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,4 +32,11 @@ public class LoginController {
         return responseInfo;
     }
 
+    @PostMapping("/refresh")
+    public @ResponseBody RefreshResponseInfo refresh(
+        @RequestHeader(value = "Authorization", defaultValue = "") String authorization
+    ) {
+        RefreshResponseInfo responseInfo = new RefreshResponseInfo();
+        return responseInfo;
+    }
 }
