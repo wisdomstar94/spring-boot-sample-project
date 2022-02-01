@@ -23,12 +23,15 @@ public class JwtCheckFilter implements Filter {
 //        this.logger.info("JwtCheckFilter 진입!");
         final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         final String uniqueAccessKey = (String) request.getAttribute("accessUniqueKey");
-        String authorization = httpServletRequest.getHeader("Authorization");
-        this.logger.info(uniqueAccessKey + " : JwtCheckFilter 진입!");
-        this.logger.info(uniqueAccessKey + " : authorization = " + authorization);
+        final String uri = httpServletRequest.getRequestURI();
+        if (!"/login".equals(uri)) {
+            String authorization = httpServletRequest.getHeader("Authorization");
+            this.logger.info(uniqueAccessKey + " : JwtCheckFilter 진입!");
+            this.logger.info(uniqueAccessKey + " : authorization = " + authorization);
 
-        JwtService jwtService = new JwtService();
-        jwtService.getClaims(authorization);
+            JwtService jwtService = new JwtService();
+            jwtService.getClaims(authorization);
+        }
 
         chain.doFilter(request, response);
     }
